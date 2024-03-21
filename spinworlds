@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Random Word Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding-top: 50px;
+    }
+    #word-container {
+      font-size: 24px;
+      font-weight: bold;
+      cursor: pointer;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Random Word Generator</h1>
+  <div id="word-container"></div>
+
+  <script>
+    // Function to fetch the word list from a file
+    async function fetchWordList(url) {
+      try {
+        const response = await fetch(url);
+        const data = await response.text();
+        return data.trim().split('\n');
+      } catch (error) {
+        console.error('Error fetching word list:', error);
+        return [];
+      }
+    }
+
+    // Function to generate a random sequence of 12 unique words
+    async function generateWords() {
+      const wordContainer = document.getElementById('word-container');
+      const words = await fetchWordList('https://raw.githubusercontent.com/your-username/your-repo/main/path/to/word-list.txt');
+
+      if (words.length > 0) {
+        const shuffledWords = words.slice().sort(() => 0.5 - Math.random());
+        const randomWords = shuffledWords.slice(0, 12);
+        wordContainer.textContent = randomWords.join(' ');
+
+        // Add click event listener to copy text to clipboard
+        wordContainer.addEventListener('click', () => {
+          navigator.clipboard.writeText(wordContainer.textContent)
+            .then(() => {
+              alert('Text copied to clipboard!');
+            })
+            .catch((err) => {
+              console.error('Failed to copy text: ', err);
+            });
+        });
+      } else {
+        wordContainer.textContent = 'Failed to fetch word list.';
+      }
+    }
+
+    // Call the generateWords function when the page loads
+    generateWords();
+  </script>
+</body>
+</html>
